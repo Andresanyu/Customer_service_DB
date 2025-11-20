@@ -3,7 +3,7 @@ PROMPT ================================
 PROMPT EJECUTANDO SCRIPT: PROCEDIMIENTO DE LIMPIEZA DE MODELO DE DATOS
 PROMPT ================================
 
-ALTER SESSION SET CONTAINER = XEPDB1;
+CONNECT usuario_proyecto/Proyecto123@XEPDB1
 
 CREATE OR REPLACE PROCEDURE sp_limpiar_modelo IS
 BEGIN
@@ -13,12 +13,12 @@ BEGIN
     EXECUTE IMMEDIATE 'ALTER TABLE fact_support_tickets DISABLE CONSTRAINT fk_categoria';
     EXECUTE IMMEDIATE 'ALTER TABLE fact_support_tickets DISABLE CONSTRAINT fk_canal';
 
-    TRUNCATE TABLE fact_support_tickets;
     TRUNCATE TABLE agentes;
     TRUNCATE TABLE clientes;
     TRUNCATE TABLE productos;
     TRUNCATE TABLE categorias;
     TRUNCATE TABLE canales;
+    TRUNCATE TABLE fact_support_tickets;
 
     EXECUTE IMMEDIATE 'ALTER TABLE fact_support_tickets ENABLE CONSTRAINT fk_agente';
     EXECUTE IMMEDIATE 'ALTER TABLE fact_support_tickets ENABLE CONSTRAINT fk_cliente';

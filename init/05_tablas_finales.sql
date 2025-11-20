@@ -3,7 +3,7 @@ PROMPT ================================
 PROMPT EJECUTANDO SCRIPT: TABLAS FINALES DEL PROYECTO
 PROMPT ================================
 
-ALTER SESSION SET CONTAINER = XEPDB1;
+CONNECT usuario_proyecto/Proyecto123@XEPDB1
 
 CREATE TABLE agentes (
     id_agente NUMBER GENERATED ALWAYS AS IDENTITY,
