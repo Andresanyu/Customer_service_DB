@@ -69,10 +69,8 @@ CREATE TABLE fact_support_tickets (
     csat_score NUMBER(1) CHECK (csat_score BETWEEN 1 AND 5),
     response_time_minutes NUMBER(10,2),
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT pk_fact_support PRIMARY KEY (id_ticket) USING INDEX TABLESPACE tbs_proyecto_indices,
     CONSTRAINT uk_unique_ticket UNIQUE (unique_id) USING INDEX TABLESPACE tbs_proyecto_indices,
-
     CONSTRAINT fk_agente FOREIGN KEY (id_agente) REFERENCES agentes(id_agente),
     CONSTRAINT fk_cliente FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente),
     CONSTRAINT fk_producto FOREIGN KEY (id_producto) REFERENCES productos(id_producto),
