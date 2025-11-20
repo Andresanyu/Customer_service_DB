@@ -1,7 +1,7 @@
-SET SERVEROUTPUT ON
-PROMPT =========================================
+SET SERVEROUTPUT ON;
+PROMPT ================================
 PROMPT CREACION DE USUARIO DEL PROYECTO
-PROMPT =========================================
+PROMPT ================================
 
 ALTER SESSION SET CONTAINER = XEPDB1;
 
