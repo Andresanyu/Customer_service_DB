@@ -15,4 +15,6 @@ CREATE TABLE control_procesos (
     fecha_carga_parametro DATE,
     mensaje VARCHAR2(500),
     estado VARCHAR2(20) DEFAULT 'EXITOSO'
-) TABLESPACE tbs_proyecto_temp;
+) TABLESPACE tbs_proyecto_datos;
+
+COMMIT;

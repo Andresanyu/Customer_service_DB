@@ -5,7 +5,7 @@ PROMPT ================================
 
 ALTER SESSION SET CONTAINER = XEPDB1;
 
-CREATE TABLE temp_support_raw (
+CREATE GLOBAL TEMPORARY TABLE temp_support_raw (
     unique_id VARCHAR2(100),
     channel_name VARCHAR2(100),
     category VARCHAR2(100),
