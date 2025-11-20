@@ -12,8 +12,7 @@ services:
       - ORACLE_CHARACTERSET=AL32UTF8
     volumes:
       - oracle-data:/opt/oracle/oradata
-      - ./init/setup:/opt/oracle/scripts/setup
-      - ./init/startup:/opt/oracle/scripts/startup
+      - ./init:/opt/oracle/scripts/startup
       - ./data:/opt/oracle/data
     shm_size: 1g
     networks:
