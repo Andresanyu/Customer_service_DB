@@ -82,4 +82,104 @@ CREATE INDEX idx_fact_agente ON fact_support_tickets(id_agente) TABLESPACE tbs_p
 CREATE INDEX idx_fact_fecha ON fact_support_tickets(issue_reported_at) TABLESPACE tbs_proyecto_indices;
 CREATE INDEX idx_fact_csat ON fact_support_tickets(csat_score) TABLESPACE tbs_proyecto_indices;
 
+-- Procedimientos de carga de datos
+
+CREATE OR REPLACE PROCEDURE sp_carga_general(p_fecha_carga DATE)
+AS
+BEGIN
+    INSERT INTO control_procesos(nombre_tabla, operacion, fecha_carga_parametro)
+    VALUES ('CONTROL_PROCESOS', 'INSERT', p_fecha_carga);
+
+    COMMIT;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE sp_cargar_agentes(p_fecha_carga DATE) IS
+    v_filas NUMBER;
+BEGIN
+    INSERT INTO agentes(agent_name, supervisor, manager, tenure_bucket)
+    SELECT DISTINCT agent_name, supervisor, manager, tenure_bucket
+    FROM temp_support_raw;
+    v_filas := SQL%ROWCOUNT;
+    INSERT INTO control_procesos(nombre_tabla, filas_afectadas, operacion, fecha_carga_parametro)
+    VALUES ('AGENTES', v_filas, 'INSERT', p_fecha_carga);
+    
+    COMMIT;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE sp_cargar_clientes(p_fecha DATE) IS
+    v_filas NUMBER;
+BEGIN
+    INSERT INTO clientes(customer_city)
+    SELECT DISTINCT customer_city
+    FROM temp_support_raw
+    WHERE customer_city IS NOT NULL;
+    v_filas := SQL%ROWCOUNT;
+    INSERT INTO control_procesos(nombre_tabla, filas_afectadas, operacion, fecha_carga_parametro, mensaje)
+    VALUES('CLIENTES', v_filas, 'INSERT', p_fecha, 'Carga exitosa de clientes');
+
+    COMMIT;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE sp_cargar_productos(p_fecha DATE) IS
+    v_filas NUMBER;
+BEGIN
+    INSERT INTO productos(product_category)
+    SELECT DISTINCT product_category
+    FROM temp_support_raw
+    WHERE product_category IS NOT NULL;
+    v_filas := SQL%ROWCOUNT;
+    INSERT INTO control_procesos(nombre_tabla, filas_afectadas, operacion, fecha_carga_parametro, mensaje)
+    VALUES('PRODUCTOS', v_filas, 'INSERT', p_fecha, 'Carga exitosa de productos');
+
+    COMMIT;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE sp_cargar_categorias(p_fecha DATE) IS
+    v_filas NUMBER;
+BEGIN
+    INSERT INTO categorias(category, sub_category)
+    SELECT DISTINCT category, sub_category
+    FROM temp_support_raw
+    WHERE category IS NOT NULL;
+    v_filas := SQL%ROWCOUNT;
+    INSERT INTO control_procesos(nombre_tabla, filas_afectadas, operacion, fecha_carga_parametro, mensaje)
+    VALUES('CATEGORIAS', v_filas, 'INSERT', p_fecha, 'Carga exitosa de categorias');
+
+    COMMIT;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE sp_cargar_canales(p_fecha DATE) IS
+    v_filas NUMBER;
+BEGIN
+    INSERT INTO canales(channel_name)
+    SELECT DISTINCT channel_name
+    FROM temp_support_raw
+    WHERE channel_name IS NOT NULL;
+    v_filas := SQL%ROWCOUNT;
+    INSERT INTO control_procesos(nombre_tabla, filas_afectadas, operacion, fecha_carga_parametro, mensaje)
+    VALUES('CANALES', v_filas, 'INSERT', p_fecha, 'Carga exitosa de canales');
+
+    COMMIT;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE sp_cargar_fact_support(p_fecha DATE) IS
+    v_filas NUMBER;
+BEGIN
+    INSERT INTO fact_support_tickets (unique_id, order_id, item_price, agent_shift, csat_score)
+    SELECT unique_id, order_id, TO_NUMBER(item_price), agent_shift, TO_NUMBER(csat_score)
+    FROM temp_support_raw;
+    v_filas := SQL%ROWCOUNT;
+    INSERT INTO control_procesos(nombre_tabla, filas_afectadas, operacion, fecha_carga_parametro, mensaje)
+    VALUES('FACT_SUPPORT', v_filas, 'INSERT', p_fecha, 'Carga exitosa de hechos');
+
+    COMMIT;
+END;
+/
+
 COMMIT;
