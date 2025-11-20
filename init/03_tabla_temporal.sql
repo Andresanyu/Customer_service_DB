@@ -3,7 +3,7 @@ PROMPT ================================
 PROMPT EJECUTANDO SCRIPT: TABLA TEMPORAL Y ESTRUCTURA DE DATOS
 PROMPT ================================
 
-ALTER SESSION SET CONTAINER = XEPDB1;
+CONNECT usuario_proyecto/Proyecto123@XEPDB1
 
 CREATE GLOBAL TEMPORARY TABLE temp_support_raw (
     unique_id VARCHAR2(100),

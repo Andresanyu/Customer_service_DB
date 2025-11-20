@@ -3,7 +3,7 @@ PROMPT ================================
 PROMPT EJECUTANDO SCRIPT: TABLA DE AUDITORIA DE PROCESOS
 PROMPT ================================
 
-ALTER SESSION SET CONTAINER = XEPDB1;
+CONNECT usuario_proyecto/Proyecto123@XEPDB1
 
 CREATE TABLE control_procesos (
     id_proceso NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
