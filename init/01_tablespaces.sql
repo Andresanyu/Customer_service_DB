@@ -3,6 +3,8 @@ PROMPT ================================
 PROMPT EJECUTANDO SCRIPT: TABLESPACES
 PROMPT ================================
 
+ALTER SESSION SET CONTAINER = XEPDB1;
+
 -- TABLESPACE DATOS
 CREATE TABLESPACE tbs_proyecto_datos
 DATAFILE '/opt/oracle/oradata/XE/tbs_proyecto_datos01.dbf'
