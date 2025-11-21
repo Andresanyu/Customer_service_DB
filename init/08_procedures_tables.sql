@@ -117,7 +117,7 @@ BEGIN
             p.id_producto,
             cat.id_categoria,
             can.id_canal,
-            TO_TIMESTAMP(t.order_date_time, 'YYYY-MM-DD HH24:MI:SS') AS order_date_time,
+            TO_TIMESTAMP(t.order_date_time, 'DD-MM-YYYY HH24:MI') AS order_date_time,
             TO_TIMESTAMP(t.issue_reported_at, 'YYYY-MM-DD HH24:MI:SS') AS issue_reported_at,
             TO_TIMESTAMP(t.issue_responded, 'YYYY-MM-DD HH24:MI:SS') AS issue_responded,
             TO_DATE(t.survey_response_date, 'YYYY-MM-DD') AS survey_response_date,
