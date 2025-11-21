@@ -19,7 +19,7 @@ echo       Carga completada exitosamente
 echo.
 
 echo [2/2] Ejecutando pipeline de transformacion...
-(echo EXEC sp_pipeline_carga_soporte; & echo EXIT;) | docker exec -i %CONTAINER_NAME% sqlplus -s %DB_USER%/%DB_PASS%@%DB_CONN%
+(echo EXEC sp_pipeline_carga_soporte; & echo TRUNCATE TABLE temp_support_raw; & echo EXIT;) | docker exec -i %CONTAINER_NAME% sqlplus -s %DB_USER%/%DB_PASS%@%DB_CONN%
 
 echo    PROCESO COMPLETADO EXITOSAMENTE
 pause

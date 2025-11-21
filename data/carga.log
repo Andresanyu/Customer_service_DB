@@ -1,0 +1,72 @@
+
+SQL*Loader: Release 21.0.0.0.0 - Production on Fri Nov 21 01:34:27 2025
+Version 21.3.0.0.0
+
+Copyright (c) 1982, 2021, Oracle and/or its affiliates.  All rights reserved.
+
+Control File:   /opt/oracle/data/control-temp.ctl
+Data File:      /opt/oracle/data/Customer_support_data.csv
+  Bad File:     /opt/oracle/data/carga.bad
+  Discard File: /opt/oracle/data/carga.dsc 
+ (Allow all discards)
+
+Number to load: ALL
+Number to skip: 0
+Errors allowed: 50
+Bind array:     250 rows, maximum of 1048576 bytes
+Continuation:    none specified
+Path used:      Conventional
+
+Table TEMP_SUPPORT_RAW, loaded from every logical record.
+Insert option in effect for this table: APPEND
+TRAILING NULLCOLS option in effect
+
+   Column Name                  Position   Len  Term Encl Datatype
+------------------------------ ---------- ----- ---- ---- ---------------------
+UNIQUE_ID                           FIRST   100   ,  O(") CHARACTER            
+CHANNEL_NAME                         NEXT   100   ,  O(") CHARACTER            
+CATEGORY                             NEXT   100   ,  O(") CHARACTER            
+SUB_CATEGORY                         NEXT   100   ,  O(") CHARACTER            
+CUSTOMER_REMARKS                     NEXT 10000   ,  O(") CHARACTER            
+ORDER_ID                             NEXT   100   ,  O(") CHARACTER            
+ORDER_DATE_TIME                      NEXT   100   ,  O(") CHARACTER            
+ISSUE_REPORTED_AT                    NEXT   100   ,  O(") CHARACTER            
+ISSUE_RESPONDED                      NEXT   100   ,  O(") CHARACTER            
+SURVEY_RESPONSE_DATE                 NEXT   100   ,  O(") CHARACTER            
+CUSTOMER_CITY                        NEXT   100   ,  O(") CHARACTER            
+PRODUCT_CATEGORY                     NEXT   100   ,  O(") CHARACTER            
+ITEM_PRICE                           NEXT    50   ,  O(") CHARACTER            
+CONNECTED_HANDLING_TIME              NEXT    50   ,  O(") CHARACTER            
+AGENT_NAME                           NEXT   100   ,  O(") CHARACTER            
+SUPERVISOR                           NEXT   100   ,  O(") CHARACTER            
+MANAGER                              NEXT   100   ,  O(") CHARACTER            
+TENURE_BUCKET                        NEXT   100   ,  O(") CHARACTER            
+AGENT_SHIFT                          NEXT   100   ,  O(") CHARACTER            
+CSAT_SCORE                           NEXT    30   ,  O(") CHARACTER            
+ROW_NUMBER                           NEXT     *   ,  O(") CHARACTER            
+
+value used for ROWS parameter changed from 250 to 87
+Record 1: Rejected - Error on table TEMP_SUPPORT_RAW, column CSAT_SCORE.
+ORA-12899: value too large for column "USUARIO_PROYECTO"."TEMP_SUPPORT_RAW"."CSAT_SCORE" (actual: 11, maximum: 10)
+
+
+Table TEMP_SUPPORT_RAW:
+  85907 Rows successfully loaded.
+  1 Row not loaded due to data errors.
+  0 Rows not loaded because all WHEN clauses were failed.
+  0 Rows not loaded because all fields were null.
+
+
+Space allocated for bind array:                1046436 bytes(87 rows)
+Read   buffer bytes: 1048576
+
+Total logical records skipped:          0
+Total logical records read:         85908
+Total logical records rejected:         1
+Total logical records discarded:        0
+
+Run began on Fri Nov 21 01:34:27 2025
+Run ended on Fri Nov 21 01:34:44 2025
+
+Elapsed time was:     00:00:16.90
+CPU time was:         00:00:02.92
