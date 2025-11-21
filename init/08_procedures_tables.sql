@@ -109,7 +109,7 @@ CREATE OR REPLACE PROCEDURE sp_cargar_fact_support(p_fecha DATE) IS
 BEGIN
     MERGE INTO fact_support_tickets f
     USING (
-        SELECT 
+        SELECT
             t.unique_id,
             t.order_id,
             a.id_agente,
@@ -209,6 +209,215 @@ EXCEPTION
         VALUES ('PIPELINE_GENERAL', 'INSERT', v_error, 'ERROR');
         COMMIT;
         RAISE;
+END;
+/
+
+CREATE OR REPLACE TRIGGER trg_agentes_audit
+AFTER UPDATE OR DELETE ON agentes
+FOR EACH ROW
+DECLARE
+    v_operacion VARCHAR2(20);
+    v_mensaje CLOB;
+BEGIN
+    IF UPDATING THEN
+        v_operacion := 'UPDATE';
+        v_mensaje := 'Campos afectados: ' || CHR(10);
+        
+        IF :OLD.agent_name IS NULL OR :NEW.agent_name != :OLD.agent_name THEN
+            v_mensaje := v_mensaje || 'Agent_Name: ' || :OLD.agent_name || ' -> ' || :NEW.agent_name || CHR(10);
+        END IF;
+        
+        IF (:OLD.supervisor IS NULL AND :NEW.supervisor IS NOT NULL) OR
+            (:OLD.supervisor IS NOT NULL AND :NEW.supervisor IS NULL) OR
+            (:OLD.supervisor IS NOT NULL AND :NEW.supervisor != :OLD.supervisor) THEN
+            v_mensaje := v_mensaje || 'Supervisor: ' || :OLD.supervisor || ' -> ' || :NEW.supervisor || CHR(10);
+        END IF;
+
+        IF (:OLD.manager IS NULL AND :NEW.manager IS NOT NULL) OR
+            (:OLD.manager IS NOT NULL AND :NEW.manager IS NULL) OR
+            (:OLD.manager IS NOT NULL AND :NEW.manager != :OLD.manager) THEN
+            v_mensaje := v_mensaje || 'Manager: ' || :OLD.manager || ' -> ' || :NEW.manager || CHR(10);
+        END IF;
+        
+    ELSIF DELETING THEN
+        v_operacion := 'DELETE';
+        v_mensaje := 'Registro eliminado: ' || CHR(10) ||
+                    'ID_Agente: ' || :OLD.id_agente || CHR(10) ||
+                    'Agent_Name: ' || :OLD.agent_name || CHR(10) ||
+                    'Supervisor: ' || :OLD.supervisor;
+    END IF;
+
+    INSERT INTO control_procesos (nombre_tabla, filas_afectadas, operacion, fecha_proceso, usuario_proceso, mensaje)
+    VALUES ('AGENTES', 1, v_operacion, SYSTIMESTAMP, SYS_CONTEXT('USERENV', 'OS_USER') || ' @ ' || SYS_CONTEXT('USERENV', 'HOST'), SUBSTR(v_mensaje, 1, 500));
+END;
+/
+
+CREATE OR REPLACE TRIGGER trg_clientes_audit
+AFTER UPDATE OR DELETE ON clientes
+FOR EACH ROW
+DECLARE
+    v_operacion VARCHAR2(20);
+    v_mensaje CLOB;
+BEGIN
+    IF UPDATING THEN
+        v_operacion := 'UPDATE';
+        v_mensaje := 'Campos afectados: ' || CHR(10);
+
+        IF (:OLD.customer_city IS NULL AND :NEW.customer_city IS NOT NULL) OR
+            (:OLD.customer_city IS NOT NULL AND :NEW.customer_city IS NULL) OR
+            (:OLD.customer_city IS NOT NULL AND :NEW.customer_city != :OLD.customer_city) THEN
+            v_mensaje := v_mensaje || 'Customer_City: ' || :OLD.customer_city || ' -> ' || :NEW.customer_city || CHR(10);
+        END IF;
+
+    ELSIF DELETING THEN
+        v_operacion := 'DELETE';
+        v_mensaje := 'Registro eliminado: ' || CHR(10) ||
+                        'ID_Cliente: ' || :OLD.id_cliente || CHR(10) ||
+                        'Customer_City: ' || :OLD.customer_city;
+    END IF;
+
+    INSERT INTO control_procesos (nombre_tabla, filas_afectadas, operacion, fecha_proceso, usuario_proceso, mensaje)
+    VALUES ('CLIENTES', 1, v_operacion, SYSTIMESTAMP, SYS_CONTEXT('USERENV', 'OS_USER') || ' @ ' || SYS_CONTEXT('USERENV', 'HOST'), SUBSTR(v_mensaje, 1, 500));
+END;
+/
+
+CREATE OR REPLACE TRIGGER trg_productos_audit
+AFTER UPDATE OR DELETE ON productos
+FOR EACH ROW
+DECLARE
+    v_operacion VARCHAR2(20);
+    v_mensaje CLOB;
+BEGIN
+    IF UPDATING THEN
+        v_operacion := 'UPDATE';
+        v_mensaje := 'Campos afectados: ' || CHR(10);
+        
+        IF (:OLD.product_category IS NULL AND :NEW.product_category IS NOT NULL) OR
+            (:OLD.product_category IS NOT NULL AND :NEW.product_category IS NULL) OR
+            (:OLD.product_category IS NOT NULL AND :NEW.product_category != :OLD.product_category) THEN
+                v_mensaje := v_mensaje || 'Product_Category: ' || :OLD.product_category || ' -> ' || :NEW.product_category || CHR(10);
+        END IF;
+        
+    ELSIF DELETING THEN
+        v_operacion := 'DELETE';
+        v_mensaje := 'Registro eliminado: ' || CHR(10) ||
+                        'ID_Producto: ' || :OLD.id_producto || CHR(10) ||
+                        'Product_Category: ' || :OLD.product_category;
+    END IF;
+
+    INSERT INTO control_procesos (nombre_tabla, filas_afectadas, operacion, fecha_proceso, usuario_proceso, mensaje)
+    VALUES ('PRODUCTOS', 1, v_operacion, SYSTIMESTAMP, SYS_CONTEXT('USERENV', 'OS_USER') || ' @ ' || SYS_CONTEXT('USERENV', 'HOST'), SUBSTR(v_mensaje, 1, 500));
+END;
+/
+
+CREATE OR REPLACE TRIGGER trg_categorias_audit
+AFTER UPDATE OR DELETE ON categorias
+FOR EACH ROW
+DECLARE
+    v_operacion VARCHAR2(20);
+    v_mensaje CLOB;
+BEGIN
+    IF UPDATING THEN
+        v_operacion := 'UPDATE';
+        v_mensaje := 'Campos afectados: ' || CHR(10);
+        
+        IF (:OLD.category IS NULL AND :NEW.category IS NOT NULL) OR 
+            (:OLD.category IS NOT NULL AND :NEW.category IS NULL) OR
+            (:OLD.category IS NOT NULL AND :NEW.category != :OLD.category) THEN
+                v_mensaje := v_mensaje || 'Category: ' || :OLD.category || ' -> ' || :NEW.category || CHR(10);
+        END IF;
+
+        IF (:OLD.sub_category IS NULL AND :NEW.sub_category IS NOT NULL) OR 
+            (:OLD.sub_category IS NOT NULL AND :NEW.sub_category IS NULL) OR
+            (:OLD.sub_category IS NOT NULL AND :NEW.sub_category != :OLD.sub_category) THEN
+                v_mensaje := v_mensaje || 'Sub_Category: ' || :OLD.sub_category || ' -> ' || :NEW.sub_category || CHR(10);
+        END IF;
+        
+    ELSIF DELETING THEN
+        v_operacion := 'DELETE';
+        v_mensaje := 'Registro eliminado: ' || CHR(10) ||
+                        'ID_Categoria: ' || :OLD.id_categoria || CHR(10) ||
+                        'Category: ' || :OLD.category || CHR(10) ||
+                        'Sub_Category: ' || :OLD.sub_category;
+    END IF;
+
+    INSERT INTO control_procesos (nombre_tabla, filas_afectadas, operacion, fecha_proceso, usuario_proceso, mensaje)
+    VALUES ('CATEGORIAS', 1, v_operacion, SYSTIMESTAMP, SYS_CONTEXT('USERENV', 'OS_USER') || ' @ ' || SYS_CONTEXT('USERENV', 'HOST'), SUBSTR(v_mensaje, 1, 500));
+END;
+/
+
+CREATE OR REPLACE TRIGGER trg_canales_audit
+AFTER UPDATE OR DELETE ON canales
+FOR EACH ROW
+DECLARE
+    v_operacion VARCHAR2(20);
+    v_mensaje CLOB;
+BEGIN
+    IF UPDATING THEN
+        v_operacion := 'UPDATE';
+        v_mensaje := 'Campos afectados: ' || CHR(10);
+        
+        IF (:OLD.channel_name IS NULL AND :NEW.channel_name IS NOT NULL) OR
+            (:OLD.channel_name IS NOT NULL AND :NEW.channel_name IS NULL) OR
+            (:OLD.channel_name IS NOT NULL AND :NEW.channel_name != :OLD.channel_name) THEN
+                v_mensaje := v_mensaje || 'Channel_Name: ' || :OLD.channel_name || ' -> ' || :NEW.channel_name || CHR(10);
+        END IF;
+        
+    ELSIF DELETING THEN
+        v_operacion := 'DELETE';
+        v_mensaje := 'Registro eliminado: ' || CHR(10) ||
+                        'ID_Canal: ' || :OLD.id_canal || CHR(10) ||
+                        'Channel_Name: ' || :OLD.channel_name;
+    END IF;
+
+    INSERT INTO control_procesos (nombre_tabla, filas_afectadas, operacion, fecha_proceso, usuario_proceso, mensaje)
+    VALUES ('CANALES', 1, v_operacion, SYSTIMESTAMP, SYS_CONTEXT('USERENV', 'OS_USER') || ' @ ' || SYS_CONTEXT('USERENV', 'HOST'), SUBSTR(v_mensaje, 1, 500));
+END;
+/
+
+CREATE OR REPLACE TRIGGER trg_tickets_audit
+AFTER UPDATE OR DELETE ON fact_support_tickets
+FOR EACH ROW
+DECLARE
+    v_operacion VARCHAR2(20);
+    v_mensaje CLOB;
+BEGIN
+    IF UPDATING THEN
+        v_operacion := 'UPDATE';
+        v_mensaje := 'ID Ticket: ' || :OLD.id_ticket || '. Campos afectados: ' || CHR(10);
+        
+        IF :OLD.unique_id IS NULL OR :NEW.unique_id != :OLD.unique_id THEN
+            v_mensaje := v_mensaje || 'Unique_ID: ' || :OLD.unique_id || ' -> ' || :NEW.unique_id || CHR(10);
+        END IF;
+
+        IF (:OLD.id_agente IS NULL AND :NEW.id_agente IS NOT NULL) OR
+            (:OLD.id_agente IS NOT NULL AND :NEW.id_agente IS NULL) OR
+            (:OLD.id_agente IS NOT NULL AND :NEW.id_agente != :OLD.id_agente) THEN
+                v_mensaje := v_mensaje || 'ID_Agente: ' || :OLD.id_agente || ' -> ' || :NEW.id_agente || CHR(10);
+        END IF;
+
+        IF (:OLD.csat_score IS NULL AND :NEW.csat_score IS NOT NULL) OR
+            (:OLD.csat_score IS NOT NULL AND :NEW.csat_score IS NULL) OR
+            (:OLD.csat_score IS NOT NULL AND :NEW.csat_score != :OLD.csat_score) THEN
+                v_mensaje := v_mensaje || 'CSAT_Score: ' || :OLD.csat_score || ' -> ' || :NEW.csat_score || CHR(10);
+        END IF;
+
+        IF (:OLD.item_price IS NULL AND :NEW.item_price IS NOT NULL) OR
+            (:OLD.item_price IS NOT NULL AND :NEW.item_price IS NULL) OR
+            (:OLD.item_price IS NOT NULL AND :NEW.item_price != :OLD.item_price) THEN
+                v_mensaje := v_mensaje || 'Item_Price: ' || :OLD.item_price || ' -> ' || :NEW.item_price || CHR(10);
+        END IF;
+        
+    ELSIF DELETING THEN
+        v_operacion := 'DELETE';
+        v_mensaje := 'Registro eliminado: ' || CHR(10) ||
+                        'ID_Ticket: ' || :OLD.id_ticket || CHR(10) ||
+                        'Unique_ID: ' || :OLD.unique_id || CHR(10) ||
+                        'CSAT_Score: ' || :OLD.csat_score;
+    END IF;
+
+    INSERT INTO control_procesos (nombre_tabla, filas_afectadas, operacion, fecha_proceso, usuario_proceso, mensaje)
+    VALUES ('FACT_SUPPORT', 1, v_operacion, SYSTIMESTAMP, SYS_CONTEXT('USERENV', 'OS_USER') || ' @ ' || SYS_CONTEXT('USERENV', 'HOST'), SUBSTR(v_mensaje, 1, 500));
 END;
 /
 
