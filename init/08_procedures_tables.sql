@@ -109,15 +109,47 @@ CREATE OR REPLACE PROCEDURE sp_cargar_fact_support(p_fecha DATE) IS
 BEGIN
     MERGE INTO fact_support_tickets f
     USING (
-        SELECT unique_id, order_id, TO_NUMBER(item_price) item_price, 
-               agent_shift, TO_NUMBER(csat_score) csat_score
-        FROM temp_support_raw
+        SELECT 
+            t.unique_id,
+            t.order_id,
+            a.id_agente,
+            cl.id_cliente,
+            p.id_producto,
+            cat.id_categoria,
+            can.id_canal,
+            TO_TIMESTAMP(t.order_date_time, 'YYYY-MM-DD HH24:MI:SS') AS order_date_time,
+            TO_TIMESTAMP(t.issue_reported_at, 'YYYY-MM-DD HH24:MI:SS') AS issue_reported_at,
+            TO_TIMESTAMP(t.issue_responded, 'YYYY-MM-DD HH24:MI:SS') AS issue_responded,
+            TO_DATE(t.survey_response_date, 'YYYY-MM-DD') AS survey_response_date,
+            t.customer_remarks,
+            TO_NUMBER(t.item_price) AS item_price,
+            TO_NUMBER(t.connected_handling_time) AS connected_handling_time,
+            t.agent_shift,
+            TO_NUMBER(t.csat_score) AS csat_score
+        FROM temp_support_raw t
+        LEFT JOIN agentes a ON a.agent_name = t.agent_name
+        LEFT JOIN clientes cl ON cl.customer_city = t.customer_city
+        LEFT JOIN productos p ON p.product_category = t.product_category
+        LEFT JOIN categorias cat ON cat.category = t.category AND cat.sub_category = t.sub_category
+        LEFT JOIN canales can ON can.channel_name = t.channel_name
     ) src
     ON (f.unique_id = src.unique_id)
     WHEN NOT MATCHED THEN
-        INSERT (unique_id, order_id, item_price, agent_shift, csat_score)
-        VALUES (src.unique_id, src.order_id, src.item_price, src.agent_shift, src.csat_score);
+        INSERT (
+            unique_id, order_id, id_agente, id_cliente, id_producto, 
+            id_categoria, id_canal, order_date_time, issue_reported_at,
+            issue_responded, survey_response_date, customer_remarks,
+            item_price, connected_handling_time, agent_shift, csat_score
+        )
+        VALUES (
+            src.unique_id, src.order_id, src.id_agente, src.id_cliente, src.id_producto,
+            src.id_categoria, src.id_canal, src.order_date_time, src.issue_reported_at,
+            src.issue_responded, src.survey_response_date, src.customer_remarks,
+            src.item_price, src.connected_handling_time, src.agent_shift, src.csat_score
+        );
+    
     v_filas := SQL%ROWCOUNT;
+    
     INSERT INTO control_procesos(nombre_tabla, filas_afectadas, operacion, fecha_carga_parametro, mensaje)
     VALUES('FACT_SUPPORT', v_filas, 'INSERT', p_fecha, 'Carga exitosa de hechos');
 END;
@@ -175,7 +207,7 @@ EXCEPTION
         v_error := SQLERRM;
         INSERT INTO control_procesos(nombre_tabla, operacion, mensaje, estado)
         VALUES ('PIPELINE_GENERAL', 'INSERT', v_error, 'ERROR');
-        COMMIT;  -- Guardar el log de error
+        COMMIT;
         RAISE;
 END;
 /
