@@ -17,7 +17,7 @@ Repositorio para desplegar una base de datos Oracle XE con la herramienta Docker
 
 1) Abrir `cmd.exe` y situarse en la raíz del repositorio:
 
-	 `cd "c:\Users\Acer1\Escritorio\Customer_service Database"`
+	 `cd .\Customer_service Database`
 
 2) Levantar el contenedor de la base de datos:
 
