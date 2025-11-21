@@ -5,7 +5,7 @@ PROMPT ================================
 
 CONNECT usuario_proyecto/Proyecto123@XEPDB1
 
-CREATE GLOBAL TEMPORARY TABLE temp_support_raw (
+CREATE TABLE temp_support_raw (
     unique_id VARCHAR2(100),
     channel_name VARCHAR2(100),
     category VARCHAR2(100),
@@ -28,6 +28,6 @@ CREATE GLOBAL TEMPORARY TABLE temp_support_raw (
     csat_score VARCHAR2(10),
     row_number NUMBER,
     load_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) TABLESPACE tbs_proyecto_temp;
+) TABLESPACE tbs_proyecto_datos;
 
 COMMIT;
