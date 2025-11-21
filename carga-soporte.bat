@@ -22,7 +22,7 @@ echo [2/2] Ejecutando pipeline de transformacion...
 setlocal DisableDelayedExpansion
 
 > temp_script.sql (
-    echo EXEC sp_pipeline_carga_soporte;
+    echo EXEC pkg_carga_datos.sp_pipeline_carga_soporte;
     echo TRUNCATE TABLE temp_support_raw;
     echo EXEC GENERAR_REPORTE_RESUMEN^(TO_DATE^('2023-01-01', 'YYYY-MM-DD'^), TO_DATE^('2025-12-31', 'YYYY-MM-DD'^)^);
     echo EXIT;
