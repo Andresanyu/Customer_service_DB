@@ -61,7 +61,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_validaciones AS
     BEGIN
         SELECT COUNT(*) INTO v_nulos
         FROM temp_support_raw
-        WHERE agent_name IS NULL 
+        WHERE agent_name IS NULL
             OR channel_name IS NULL
             OR category IS NULL;
         

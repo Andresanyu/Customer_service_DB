@@ -29,6 +29,9 @@ setlocal DisableDelayedExpansion
 )
 
 docker exec -i %CONTAINER_NAME% sqlplus -s %DB_USER%/%DB_PASS%@%DB_CONN% < temp_script.sql
+
+docker exec -i %CONTAINER_NAME% sqlplus -s %DB_USER%/%DB_PASS%@%DB_CONN% < examples.sql
+
 del temp_script.sql
 
 echo    PROCESO COMPLETADO EXITOSAMENTE

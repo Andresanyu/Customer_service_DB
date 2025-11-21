@@ -52,11 +52,9 @@ FROM (
 ) PIVOT (
     COUNT(CHANNEL_NAME)
     FOR CHANNEL_NAME IN (
-        'Canal1' AS Canal1,
-        'Canal2' AS Canal2,
-        'Canal3' AS Canal3,
-        'Canal4' AS Canal4,
-        'Canal5' AS Canal5
+        'Email' AS email,
+        'Inbound' AS inbound,
+        'Outcall' AS outcall
     )
 )
 ORDER BY CATEGORY;
